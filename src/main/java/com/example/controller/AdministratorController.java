@@ -17,6 +17,7 @@ import com.example.form.LoginForm;
 import com.example.service.AdministratorService;
 
 import jakarta.servlet.http.HttpSession;
+import java.util.Objects;
 
 /**
  * 管理者情報を操作するコントローラー.
@@ -77,10 +78,17 @@ public class AdministratorController {
 	@PostMapping("/insert")
 	public String insert(@Validated InsertAdministratorForm form, BindingResult br) {
 
+		// 入力値チェック
 		if (br.hasErrors()) {
 			return toInsert();
 		}
-		
+
+		// メールアドレス重複チェック
+		if (Objects.nonNull(administratorService.findByMailAddress(form.getMailAddress()))) {
+			br.rejectValue("mailAddress", "error.administrator.insert.email");
+			return toInsert();
+		}
+
 		Administrator administrator = new Administrator();
 		// フォームからドメインにプロパティ値をコピー
 		BeanUtils.copyProperties(form, administrator);
@@ -109,7 +117,8 @@ public class AdministratorController {
 	 */
 	@PostMapping("/login")
 	public String login(LoginForm form, RedirectAttributes redirectAttributes) {
-		Administrator administrator = administratorService.login(form.getMailAddress(), form.getPassword());
+		Administrator administrator =
+				administratorService.login(form.getMailAddress(), form.getPassword());
 		if (administrator == null) {
 			redirectAttributes.addFlashAttribute("errorMessage", "メールアドレスまたはパスワードが不正です。");
 			return "redirect:/";
