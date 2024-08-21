@@ -83,9 +83,15 @@ public class AdministratorController {
 			return toInsert();
 		}
 
+		// 相関チェック（パスワードと確認用パスワードが違う場合はチェック対象とする）
+		if(!form.getPassword().equals(form.getConfirmPassword())){
+			br.rejectValue("confirmPassword", "error.administrator.insert.password-not-equals");
+			return toInsert();
+		}
+
 		// メールアドレス重複チェック
 		if (Objects.nonNull(administratorService.findByMailAddress(form.getMailAddress()))) {
-			br.rejectValue("mailAddress", "error.administrator.insert.email");
+			br.rejectValue("mailAddress", "error.administrator.insert.email-deplication");
 			return toInsert();
 		}
 
