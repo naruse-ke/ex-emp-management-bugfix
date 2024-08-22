@@ -89,6 +89,15 @@
         </li>
       </ol>
 
+      <!-- 検索フォーム -->
+      <div class="col-lg-offset-2 col-lg-8 col-md-offset-2">
+        <p class="alert alert-danger" th:unless="${#strings.isEmpty(searchMsg)}" th:text="${searchMsg}"></p>
+        <form th:action="@{/employee/showList/search}" method="get" class="search-form">
+          <input type="text" name="name" th:value="${param.name}" placeholder="名前検索">
+          <button type="submit">検索</button>
+        </form>
+      </div>
+
       <!-- table -->
       <div class="row">
         <div
